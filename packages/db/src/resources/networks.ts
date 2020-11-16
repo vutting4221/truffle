@@ -1,9 +1,9 @@
-import {logger} from "@truffle/db/logger";
-const debug = logger("db:definitions:networks");
+import { logger } from "@truffle/db/logger";
+const debug = logger("db:resources:networks");
 
 import gql from "graphql-tag";
 
-import {Definition} from "./types";
+import { Definition } from "./types";
 
 export const networks: Definition<"networks"> = {
   named: true,
@@ -20,11 +20,11 @@ export const networks: Definition<"networks"> = {
       possibleAncestors(
         alreadyTried: [ID]!
         limit: Int # will default to 5
-      ): [CandidateSearchResult]!
+      ): CandidateSearchResult!
       possibleDescendants(
         alreadyTried: [ID]!
         limit: Int # will default to 5
-      ): [CandidateSearchResult]!
+      ): CandidateSearchResult!
     }
 
     scalar NetworkId
@@ -46,7 +46,7 @@ export const networks: Definition<"networks"> = {
     }
 
     type CandidateSearchResult {
-      network: Network!
+      networks: [Network]!
       alreadyTried: [ID]! #will include all networks returned
     }
   `,
@@ -58,9 +58,9 @@ export const networks: Definition<"networks"> = {
         }
       },
       possibleAncestors: {
-        resolve: async ({id}, {limit = 5, alreadyTried}, {workspace}) => {
+        resolve: async ({ id }, { limit = 5, alreadyTried }, { workspace }) => {
           const network = await workspace.get("networks", id);
-          const result = await workspace.find("networks", {
+          const networks = await workspace.find("networks", {
             selector: {
               "historicBlock.height": {
                 $lt: network.historicBlock.height,
@@ -71,24 +71,22 @@ export const networks: Definition<"networks"> = {
                 $nin: alreadyTried
               }
             },
-            sort: [{"historicBlock.height": "desc"}],
+            sort: [{ "historicBlock.height": "desc" }],
             limit
           });
 
-          const untriedNetworks = result.map(network => {
-            return {
-              network,
-              alreadyTried: alreadyTried
-            };
-          });
-
-          return untriedNetworks;
+          return {
+            networks,
+            alreadyTried: [
+              ...new Set([...alreadyTried, ...networks.map(({ id }) => id)])
+            ]
+          };
         }
       },
       possibleDescendants: {
-        resolve: async ({id}, {limit = 5, alreadyTried}, {workspace}) => {
+        resolve: async ({ id }, { limit = 5, alreadyTried }, { workspace }) => {
           const network = await workspace.get("networks", id);
-          const result = await workspace.find("networks", {
+          const networks = await workspace.find("networks", {
             selector: {
               "historicBlock.height": {
                 $gt: network.historicBlock.height,
@@ -99,25 +97,23 @@ export const networks: Definition<"networks"> = {
                 $nin: alreadyTried
               }
             },
-            sort: [{"historicBlock.height": "asc"}],
+            sort: [{ "historicBlock.height": "asc" }],
             limit
           });
 
-          const untriedNetworks = result.map(network => {
-            return {
-              network,
-              alreadyTried: alreadyTried
-            };
-          });
-
-          return untriedNetworks;
+          return {
+            networks,
+            alreadyTried: [
+              ...new Set([...alreadyTried, ...networks.map(({ id }) => id)])
+            ]
+          };
         }
       }
     },
     CandidateSearchResult: {
-      network: {
+      networks: {
         resolve: async (parent, __, {}) => {
-          return parent.network;
+          return parent.networks;
         }
       },
       alreadyTried: {
