@@ -202,7 +202,9 @@ const command = {
     }
 
     WorkflowCompile.compileAndSave(conf)
-      .then(async () => {
+      .then(async (result) => {
+        await WorkflowCompile.assignNames(conf, result);
+
         await Environment.detect(conf);
 
         const {

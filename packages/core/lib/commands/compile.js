@@ -101,7 +101,11 @@ const command = {
               {encoding: "utf8"}
             );
           }
-          return WorkflowCompile.save(config, compilationOutput);
+          const result = await WorkflowCompile.save(config, compilationOutput);
+
+          await WorkflowCompile.assignNames(config, result);
+
+          return result;
         })
         .then(() => done())
         .catch(done);
