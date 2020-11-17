@@ -6,7 +6,9 @@ import gql from "graphql-tag";
 import {Definition} from "./types";
 
 export const contractInstances: Definition<"contractInstances"> = {
-  createIndexes: [],
+  createIndexes: [
+    { fields: ["network.id"] }
+  ],
   idFields: ["address", "network"],
   typeDefs: gql`
     type ContractInstance implements Resource {
