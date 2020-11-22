@@ -155,13 +155,13 @@ function* findRelation(
     debug("candidates %o", candidates);
 
     for (const candidate of candidates) {
-      const { result: { hash = undefined } = {} } = yield {
+      const response = yield {
         type: "web3",
         method: "eth_getBlockByNumber",
         params: [candidate.historicBlock.height, false]
       };
 
-      if (hash === candidate.historicBlock.hash) {
+      if (response && response.result && response.result.hash === candidate.historicBlock.hash) {
         result = toIdObject(candidate);
         break;
       }
