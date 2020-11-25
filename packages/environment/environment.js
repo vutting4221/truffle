@@ -1,3 +1,5 @@
+const debug = require("debug")("environment:environment");
+
 const Web3 = require("web3");
 const { createInterfaceAdapter } = require("@truffle/interface-adapter");
 const expect = require("@truffle/expect");
@@ -6,13 +8,14 @@ const Resolver = require("@truffle/resolver");
 const Artifactor = require("@truffle/artifactor");
 const Ganache = require("ganache-core/public-exports");
 const Provider = require("@truffle/provider");
+const { connect, Project } = require("@truffle/db");
 
 const Environment = {
   // It's important config is a Config object and not a vanilla object
   detect: async function(config) {
     expect.options(config, ["networks"]);
 
-    helpers.setUpConfig(config);
+    await helpers.setUpConfig(config);
     helpers.validateNetworkConfig(config);
 
     const interfaceAdapter = createInterfaceAdapter({
@@ -123,7 +126,24 @@ const helpers = {
     }
   },
 
-  setUpConfig: config => {
+  setUpConfig: async (config) => {
+    if (config.db && !config.db.connect && config.db.enabled) {
+      debug("enabling db environment");
+      config.db.connect = () => connect(config);
+
+      debug("getting project");
+      const { id } = await Project.initialize({
+        db: connect(config),
+        project: {
+          directory: config.working_directory
+        }
+      });
+
+
+      debug("setting project");
+      config.db.project = { id };
+    }
+
     if (!config.resolver) {
       config.resolver = new Resolver(config);
     }

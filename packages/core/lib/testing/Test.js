@@ -92,6 +92,8 @@ const Test = {
 
     const testResolver = new Resolver(config, true);
 
+
+    debug("config.db %O", config.db);
     const { compilations } = await this.compileContractsWithTestFilesIfNeeded(
       solTests,
       config,

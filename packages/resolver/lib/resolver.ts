@@ -1,9 +1,12 @@
+import debugModule from "debug";
+const debug = debugModule("resolver:resolver");
+
 const contract = require("@truffle/contract");
 const expect = require("@truffle/expect");
 const provision = require("@truffle/provisioner");
 
 import { ResolverSource } from "./source";
-import { EthPMv1, NPM, GlobalNPM, FS, Truffle, ABI } from "./sources";
+import { EthPMv1, NPM, GlobalNPM, FS, Truffle, ABI, TruffleDB } from "./sources";
 
 export class Resolver {
   options: any;
@@ -23,6 +26,15 @@ export class Resolver {
 
     if (includeTruffleSource) {
       this.sources.unshift(new Truffle(options));
+    }
+
+    if (options.db && options.db.connect) {
+      debug("adding TruffleDB resolver");
+      this.sources.unshift(new TruffleDB(
+        options.working_directory,
+        options.db.connect,
+        options.db.project
+      ));
     }
   }
 

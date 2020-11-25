@@ -44,7 +44,7 @@ const WorkflowCompile = {
   compile: async function (options, callback) {
     const callbackPassed = typeof callback === "function";
     try {
-      const config = prepareConfig(options);
+      const config = await prepareConfig(options);
 
       const compilers = config.compiler
         ? [config.compiler]
