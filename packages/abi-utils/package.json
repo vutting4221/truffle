@@ -23,8 +23,7 @@
     "url": "git+https://github.com/trufflesuite/truffle.git"
   },
   "scripts": {
-    "prepare": "tsc",
-    "test": "jest lib/**"
+    "prepare": "tsc"
   },
   "bugs": {
     "url": "https://github.com/trufflesuite/truffle/issues"
