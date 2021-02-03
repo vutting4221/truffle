@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "bn.js": "^4.11.8",
-    "ethers": "^4.0.32",
+    "ethers": "^5.0.0",
     "source-map-support": "^0.5.19",
     "web3": "1.2.9"
   },
