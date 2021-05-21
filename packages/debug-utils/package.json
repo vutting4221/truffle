@@ -14,7 +14,7 @@
     "prepare": "exit 0"
   },
   "dependencies": {
-    "@truffle/codec": "^0.9.1",
+    "@truffle/codec": "^0.10.7",
     "@trufflesuite/chromafi": "^2.2.1",
     "chalk": "^2.4.2",
     "debug": "^4.1.0",
