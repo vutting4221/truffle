@@ -45,7 +45,7 @@
     "fse": "^4.0.1",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.11.0",
-    "graphql-tools": "^6.2.4",
+    "graphql-tools": "^8.0.0",
     "jsondown": "^1.0.0",
     "leveldown": "^5.2.0",
     "module-alias": "^2.1.0",
